@@ -1,7 +1,25 @@
 {% include 'header.html' %}
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="hidden" name="next" value="{% url 'task_list' %}">
-    <button type="submit">Log In</button>
-</form>
+<div class="container">
+    <h2>Login</h2>
+    <!-- Отображение ошибок -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <!-- Форма входа -->
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %} <br><br>
+        <div class="form-group">
+            <label for="id_username">Username:</label>
+            <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required><br><br>
+        </div><br>
+        <div class="form-group">
+            <label for="id_password">Password:</label>
+            <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" required>
+        </div><br>
+        <input type="hidden" name="next" value="{% url 'task_list' %}">
+        <button type="submit" class="btn btn-primary">Log In</button>
+    </form>
+    <p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
+</div>

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.conf import settings
 
 class CustomUser(AbstractUser):
@@ -11,10 +11,20 @@ class CustomUser(AbstractUser):
         return self.username
 
 class Task(models.Model):
-    title = models.CharField(max_length=200)
-    completed = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Ссылка на кастомную модель пользователя
+    title = models.CharField(max_length=255)
+    completed = models.BooleanField(default=False)  # Галочка выполненности
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks')  # Родительская заметка
+    deadline = models.DateTimeField(null=True, blank=True)  # Дедлайн
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Используем AUTH_USER_MODEL
 
     def __str__(self):
         return self.title
+
+    def complete_task_and_subtasks(self):
+        """Отмечает задачу и все её подзадачи как выполненные"""
+        self.completed = True
+        self.save()
+        for subtask in self.subtasks.all():
+            subtask.completed = True
+            subtask.save()

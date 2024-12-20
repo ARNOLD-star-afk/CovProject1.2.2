@@ -5,8 +5,14 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.task_list, name='task_list'),
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    path('edit/<int:pk>/', views.edit_task, name='edit_task'),
+    path('delete/<int:pk>/', views.delete_task, name='delete_task'),
+    path('complete/<int:pk>/', views.complete_task, name='complete_task'),
+    path('uncomplete/<int:pk>/', views.uncomplete_task, name='uncomplete_task'),
     path('register/', views.register, name='register'),
-    path('delete/<int:task_id>/', views.delete_task, name='delete_task'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
+    path('complete_subtask/<int:pk>/', views.complete_subtask, name='complete_subtask'),
+    path('uncomplete_subtask/<int:pk>/', views.uncomplete_subtask, name='uncomplete_subtask'),
 ]

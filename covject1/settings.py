@@ -120,15 +120,25 @@ USE_I18N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'todolist.CustomUser'
-LOGOUT_REDIRECT_URL = 'task_list'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
 LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_TZ = True
+
+DATE_FORMAT = 'd.m.Y'  # Формат даты
+DATETIME_FORMAT = 'd.m.Y H:i'  # Формат даты и времени

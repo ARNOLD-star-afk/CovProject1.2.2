@@ -1,10 +1,23 @@
 from django import forms
+from django.forms import DateTimeInput
+
 from .models import CustomUser, Task
+
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'completed']  # Поля формы
+        fields = ['title', 'deadline', 'parent']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Получаем пользователя из kwargs
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['parent'].queryset = Task.objects.filter(user=user)
+
+        # Используем стандартный DateTimeInput, который включает как дату, так и время
+        self.fields['deadline'].widget = DateTimeInput(attrs={'type': 'datetime-local'})
+
 
 
 class CustomUserCreationForm(forms.ModelForm):
