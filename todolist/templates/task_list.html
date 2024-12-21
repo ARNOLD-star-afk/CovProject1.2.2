@@ -1,4 +1,4 @@
-{% include 'header.html' %}  <!-- Подключаем хэдер -->
+{% include 'header.html' %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
     <style>
-        /* Общие стили */
+        /* Основные стили */
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f8f8f8;
@@ -19,133 +19,87 @@
         h1 {
             text-align: center;
             font-size: 2rem;
-            margin-top: 40px;
-            color: #333;
+            margin-top: 20px;
         }
 
         form {
-            margin: 30px auto;
-            width: 80%;
+            margin: 20px auto;
+            width: 90%;
             max-width: 600px;
             background-color: white;
             border-radius: 8px;
+            padding: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 20px;
         }
 
         input, button {
             font-size: 1rem;
             padding: 10px;
-            border-radius: 4px;
             margin-bottom: 10px;
-            width: 100%;
+            border-radius: 4px;
             border: 1px solid #ddd;
+            width: 100%;
         }
 
         button {
             background-color: #007bff;
             color: white;
-            border: none;
             cursor: pointer;
+            border: none;
         }
 
         button:hover {
             background-color: #0056b3;
         }
 
-        button:active {
-            background-color: #003f72;
-        }
-
-        /* Стили списка задач */
         .task-list {
             list-style: none;
             padding: 0;
-            width: 80%;
-            max-width: 900px;
             margin: 0 auto;
+            width: 90%;
+            max-width: 900px;
         }
 
         .task-item {
+            background-color: #ffffff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #ffffff;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease;
         }
 
-        .task-item:hover {
-            background-color: #f9f9f9;
-        }
-
-        .task-title {
+        .task-item .task-title {
             font-size: 1.2rem;
-            color: #333;
         }
 
-        .task-actions button {
-            margin-left: 10px;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .task-actions .complete-btn {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .task-actions .edit-btn {
-            background-color: #ffc107;
-            color: white;
-        }
-
-        .task-actions .delete-btn {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .completed {
+        .task-item.completed .task-title {
             text-decoration: line-through;
-             color: #888; /* Можно изменить цвет, если нужно */
-}
-
-        button:disabled {
-             background-color: #ddd;
-             cursor: not-allowed;
-}
-
-        /* Стиль подзадач */
-        .subtask {
-            background-color: #f1f1f1;
-            padding: 10px;
-            margin-left: 20px;
-            border-radius: 4px;
+            color: #888;
         }
 
-        /* Стили для выпадающего списка подзадач */
-        .subtasks-list {
-            display: none;
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .subtask-list {
             margin-top: 10px;
+            margin-left: 20px;
+            list-style: none;
         }
 
-        .toggle-subtasks-btn {
-            background-color: #6c757d;
-            color: white;
-            padding: 6px 12px;
-            border: none;
+        .subtask-item {
+            background-color: #f1f1f1;
+            margin-bottom: 10px;
+            padding: 10px;
             border-radius: 4px;
-            cursor: pointer;
         }
 
-        .toggle-subtasks-btn:hover {
-            background-color: #5a6268;
+        .add-subtask-form {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -153,7 +107,7 @@
     <h1>To-Do List</h1>
 
     <!-- Форма добавления задачи -->
-    <form method="POST">
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Add Task</button>
@@ -162,54 +116,31 @@
     <!-- Список задач -->
     <ul class="task-list">
         {% for task in tasks %}
-            {% if task.parent is none %}
-                <li class="task-item {% if task.completed %}completed{% endif %}">
-                    <span class="task-title">{{ task.title }}</span>
+            <li class="task-item {% if task.completed %}completed{% endif %}">
+                <span class="task-title">{{ task.title }}</span>
 
-                    <div class="task-actions">
-                        {% if not task.completed %}
-                            <a href="{% url 'complete_task' task.id %}"><button class="complete-btn">Complete</button></a>
-                        {% else %}
-                            <a href="{% url 'uncomplete_task' task.id %}"><button class="complete-btn">Undo</button></a>
-                        {% endif %}
-                        <a href="{% url 'edit_task' task.id %}"><button class="edit-btn">Edit</button></a>
-                        <a href="{% url 'delete_task' task.id %}"><button class="delete-btn">Delete</button></a>
+                <!-- Действия с задачей -->
+                <div class="task-actions">
+                    {% if not task.completed %}
+                        <a href="{% url 'complete_task' task.id %}"><button>Complete</button></a>
+                    {% else %}
+                        <a href="{% url 'uncomplete_task' task.id %}"><button>Undo</button></a>
+                    {% endif %}
+                    <a href="{% url 'edit_task' task.id %}"><button>Edit</button></a>
+                    <a href="{% url 'delete_task' task.id %}"><button>Delete</button></a>
+                </div>
 
-                        {% if task.subtasks.count > 0 %}
-                            <button class="toggle-subtasks-btn" onclick="toggleSubtasks({{ task.id }})">Toggle Subtasks</button>
-                        {% endif %}
-                    </div>
+                <!-- Форма добавления подзадач -->
+                <form class="add-subtask-form" method="post" action="{% url 'add_subtask' task.id %}">
+                    {% csrf_token %}
+                    <input type="text" name="subtask_title" placeholder="Add Subtask" required>
+                    <button type="submit">Add Subtask</button>
+                </form>
 
-                    <!-- Список подзадач -->
-                    <ul class="subtasks-list" id="subtasks-{{ task.id }}">
-                        {% for subtask in task.subtasks.all %}
-                            <li class="subtask {% if subtask.completed %}completed{% endif %}">
-                                {{ subtask.title }}
-                                {% if not subtask.completed %}
-                                    <a href="{% url 'complete_subtask' subtask.id %}"><button class="complete-btn">Complete</button></a>
-                                {% else %}
-                                    <a href="{% url 'uncomplete_subtask' subtask.id %}"><button class="complete-btn">Undo</button></a>
-                                {% endif %}
-                                <a href="{% url 'edit_task' subtask.id %}"><button class="edit-btn">Edit</button></a>
-                                <a href="{% url 'delete_task' subtask.id %}"><button class="delete-btn">Delete</button></a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endif %}
+                <!-- Рекурсивный вывод подзадач -->
+                {% include 'subtask_list.html' with subtasks=task.subtasks.all %}
+            </li>
         {% endfor %}
     </ul>
-
-    <script>
-        // Функция для отображения/скрытия подзадач
-        function toggleSubtasks(taskId) {
-            var subtasksList = document.getElementById('subtasks-' + taskId);
-            if (subtasksList.style.display === "none") {
-                subtasksList.style.display = "block";
-            } else {
-                subtasksList.style.display = "none";
-            }
-        }
-    </script>
 </body>
 </html>

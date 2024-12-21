@@ -11,11 +11,14 @@ class CustomUser(AbstractUser):
         return self.username
 
 class Task(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Ссылка на кастомную модель пользователя
+    """
+    Модель задачи.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    completed = models.BooleanField(default=False)  # Галочка выполненности
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks')  # Родительская заметка
-    deadline = models.DateTimeField(null=True, blank=True)  # Дедлайн
+    completed = models.BooleanField(default=False)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subtasks')
+    deadline = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

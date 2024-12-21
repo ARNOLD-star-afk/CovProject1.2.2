@@ -15,4 +15,7 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/', views.activate, name='activate'),
     path('complete_subtask/<int:pk>/', views.complete_subtask, name='complete_subtask'),
     path('uncomplete_subtask/<int:pk>/', views.uncomplete_subtask, name='uncomplete_subtask'),
+    path('task/<int:parent_task_id>/add_subtask/', views.add_subtask, name='add_subtask'),
+    path('add_task/', views.add_task, name='add_task'),
+    path('', views.task_list_view, name='task_list'),  # Список задач
 ]

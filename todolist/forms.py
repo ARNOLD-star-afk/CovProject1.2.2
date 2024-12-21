@@ -7,7 +7,7 @@ from .models import CustomUser, Task
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'deadline', 'parent']
+        fields = ['title', 'deadline']
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Получаем пользователя из kwargs

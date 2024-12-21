@@ -16,16 +16,13 @@ from .forms import CustomUserCreationForm, TaskForm
 
 @login_required
 def task_list_view(request):
-    tasks = Task.objects.filter(user=request.user).order_by('deadline')
+    """
+    Отображение списка задач.
+    """
+    tasks = Task.objects.filter(user=request.user, parent__isnull=True).order_by('deadline')  # Только корневые задачи
+    form = TaskForm()
 
-    # Добавляем дополнительную логику для работы с подзадачами
-    for task in tasks:
-        task.subtasks_list = task.subtasks.all()  # Получаем все подзадачи
-        task.has_subtasks = task.subtasks.exists()  # Проверяем, есть ли подзадачи у задачи
-        task.are_all_subtasks_completed = all(
-            subtask.completed for subtask in task.subtasks.all())  # Проверяем, выполнены ли все подзадачи
-
-    return render(request, 'task_list.html', {'tasks': tasks})
+    return render(request, 'task_list.html', {'tasks': tasks, 'form': form})
 
 
 
@@ -137,7 +134,20 @@ def uncomplete_task(request, pk):
 
     return redirect('task_list')
 
+@login_required
+def add_subtask(request, parent_task_id):
+    """
+    Добавление подзадачи или подподзадачи.
+    """
+    parent_task = get_object_or_404(Task, id=parent_task_id, user=request.user)
 
+    if request.method == 'POST':
+        title = request.POST.get('subtask_title') or request.POST.get('subsubtask_title')
+        if title:
+            subtask = Task.objects.create(user=request.user, title=title, parent=parent_task)
+            return redirect('task_list')
+
+    return redirect('task_list')
 
 
 @login_required
@@ -173,7 +183,15 @@ def edit_task(request, pk):
         form = TaskForm(instance=task)
     return render(request, 'edit_task.html', {'form': form})
 
-
+def add_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user  # Привязка к текущему пользователю
+            task.save()
+            return redirect('task_list')
+    return redirect('task_list')
 
 def logout_view(request):
     logout(request)

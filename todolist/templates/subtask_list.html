@@ -1,0 +1,28 @@
+<ul class="subtasks-list">
+    {% for subtask in subtasks %}
+        <li class="subtask-item">
+            <span>{{ subtask.title }}</span>
+
+            <!-- Кнопки управления подзадачей -->
+            <div>
+                {% if not subtask.completed %}
+                    <a href="{% url 'complete_task' subtask.id %}">Complete</a>
+                {% else %}
+                    <a href="{% url 'uncomplete_task' subtask.id %}">Undo</a>
+                {% endif %}
+                <a href="{% url 'edit_task' subtask.id %}">Edit</a>
+                <a href="{% url 'delete_task' subtask.id %}">Delete</a>
+            </div>
+
+            <!-- Форма добавления подподзадачи -->
+            <form method="post" action="{% url 'add_subtask' subtask.id %}">
+                {% csrf_token %}
+                <input type="text" name="subtask_title" placeholder="Название подподзадачи" required>
+                <button type="submit">Добавить подподзадачу</button>
+            </form>
+
+            <!-- Рекурсивный вызов -->
+            {% include 'subtask_list.html' with subtasks=subtask.subtasks.all %}
+        </li>
+    {% endfor %}
+</ul>

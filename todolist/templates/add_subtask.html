@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Добавить подзадачу для: {{ parent_task.title }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Добавить</button>
+  </form>
+  <a href="{% url 'task_list' %}">Назад к списку задач</a>
+{% endblock %}
